@@ -1,0 +1,13 @@
+{
+  "saltong-help": {
+    "help": "Help",
+    "summary": "Guess the word in {{numTries}} tries.\n\nEach guess must be a valid {{wordLength}} letter word. Hit the enter button to submit.\n\nAfter each guess, the color of the tiles will change to show how close your guess was to the word.",
+    "ex1": "The letter {{letter}} is in the word and in the correct spot.",
+    "ex2": "The letter {{letter}} is in the word but in the wrong spot.",
+    "ex3": "The letters are not in the word in any spot.",
+    "schedule": "A new word will be avaiable everyday at 12 midnight PHT"
+  },
+  "examples": "Examples",
+  "how-to-play": "How To Play",
+  "results": "Results"
+}

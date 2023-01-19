@@ -1,0 +1,15 @@
+import React from 'react';
+
+import {
+  getSaltongPageLayout,
+  SaltongPageContent,
+} from '../../components/saltong/SaltongPageContent';
+import { NextPageWithLayout } from '../_app';
+
+const SaltongMaxPage: NextPageWithLayout = () => (
+  <SaltongPageContent mode="max" />
+);
+
+SaltongMaxPage.getLayout = getSaltongPageLayout('max');
+
+export default SaltongMaxPage;
