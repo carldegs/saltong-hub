@@ -49,6 +49,7 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
   return (
     <Stack spacing={2}>
       <Input
+        inputMode="none"
         ref={inputRef}
         value={inputValue}
         onChange={(e) => {
