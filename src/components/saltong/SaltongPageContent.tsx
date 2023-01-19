@@ -16,9 +16,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import React, { ReactElement, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { GAME_MODE_DATA } from '../../constants/gameList';
 import { SALTONG_DATA } from '../../constants/saltong';
@@ -124,10 +124,10 @@ export const SaltongHelpModal: React.FC<
       <ModalOverlay />
       <ModalContent pb={4}>
         <ModalCloseButton />
-        <ModalHeader>{t('translation:how-to-play')}</ModalHeader>
+        <ModalHeader>{t('how-to-play')}</ModalHeader>
         <ModalBody>
           <Stack>
-            {t('translation:saltong-help.summary', {
+            {t('saltong-help.summary', {
               numTries: SALTONG_DATA[gameMode].maxTurns,
               wordLength: SALTONG_DATA[gameMode].wordLen,
             })
@@ -140,7 +140,7 @@ export const SaltongHelpModal: React.FC<
           <Divider w="full" my={4} />
 
           <Text fontWeight="bold" mb={4}>
-            {t('translation:examples')}
+            {t('examples')}
           </Text>
           <Stack spacing={4}>
             <SaltongRow
@@ -149,7 +149,7 @@ export const SaltongHelpModal: React.FC<
               status="done"
             />
             <Text>
-              {t('translation:saltong-help.ex1', {
+              {t('saltong-help.ex1', {
                 letter: EXAMPLE_1_LETTER[gameMode],
               })}
             </Text>
@@ -160,7 +160,7 @@ export const SaltongHelpModal: React.FC<
               status="done"
             />
             <Text>
-              {t('translation:saltong-help.ex2', {
+              {t('saltong-help.ex2', {
                 letter: EXAMPLE_2_LETTER[gameMode],
               })}
             </Text>
@@ -170,12 +170,12 @@ export const SaltongHelpModal: React.FC<
               letters={EXAMPLE_3[gameMode]}
               status="done"
             />
-            <Text>{t('translation:saltong-help.ex3')}</Text>
+            <Text>{t('saltong-help.ex3')}</Text>
           </Stack>
 
           <Divider w="full" my={4} />
 
-          <Text>{t('translation:saltong-help.schedule')}</Text>
+          <Text>{t('saltong-help.schedule')}</Text>
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -4,6 +4,7 @@ import {
   getSaltongPageLayout,
   SaltongPageContent,
 } from '../../components/saltong/SaltongPageContent';
+import { langServerSideProps } from '../../utils/lang';
 import { NextPageWithLayout } from '../_app';
 
 const SaltongMaxPage: NextPageWithLayout = () => (
@@ -11,5 +12,7 @@ const SaltongMaxPage: NextPageWithLayout = () => (
 );
 
 SaltongMaxPage.getLayout = getSaltongPageLayout('max');
+
+export const getServerSideProps = langServerSideProps;
 
 export default SaltongMaxPage;

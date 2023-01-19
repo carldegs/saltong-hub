@@ -4,6 +4,7 @@ import {
   getSaltongPageLayout,
   SaltongPageContent,
 } from '../../components/saltong/SaltongPageContent';
+import { langServerSideProps } from '../../utils/lang';
 import { NextPageWithLayout } from '../_app';
 
 const SaltongMiniPage: NextPageWithLayout = () => (
@@ -11,5 +12,7 @@ const SaltongMiniPage: NextPageWithLayout = () => (
 );
 
 SaltongMiniPage.getLayout = getSaltongPageLayout('mini');
+
+export const getServerSideProps = langServerSideProps;
 
 export default SaltongMiniPage;

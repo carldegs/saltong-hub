@@ -8,6 +8,7 @@ import {
   Spacer,
   StackProps,
 } from '@chakra-ui/react';
+import { useTranslation } from 'next-i18next';
 import { Question, Trophy } from 'phosphor-react';
 import React from 'react';
 
@@ -29,6 +30,7 @@ export const SaltongHeader: React.FC<
   onResultsClick,
   ...props
 }) => {
+  const { t } = useTranslation('common');
   return (
     <HStack
       w="full"
@@ -51,7 +53,7 @@ export const SaltongHeader: React.FC<
           variant="solid"
           onClick={onHelpClick}
         >
-          Help
+          {t('saltong-help.help')}
         </Button>
         <Button
           size={{ base: 'sm', md: 'md' }}
@@ -60,7 +62,7 @@ export const SaltongHeader: React.FC<
           variant="solid"
           onClick={onResultsClick}
         >
-          Results
+          {t('results')}
         </Button>
       </DarkMode>
     </HStack>
