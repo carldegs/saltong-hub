@@ -1,13 +1,14 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { NextPage } from 'next';
+import { appWithTranslation } from 'next-i18next';
 import type { AppProps } from 'next/app';
 import { ReactElement, ReactNode, useEffect } from 'react';
 
+import nextI18NextConfig from '../../next-i18next.config';
 import NavbarLayout from '../components/NavbarLayout';
 import '../lib/firebase';
 import { firebaseApp } from '../lib/firebase';
-import '../lib/i18n';
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -17,7 +18,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const getLayout =
     Component.getLayout ?? ((page) => <NavbarLayout>{page}</NavbarLayout>);
 
@@ -38,4 +39,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <ChakraProvider>{getLayout(<Component {...pageProps} />)}</ChakraProvider>
   );
-}
+};
+
+export default appWithTranslation(App, nextI18NextConfig);

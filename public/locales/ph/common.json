@@ -1,5 +1,5 @@
 {
-  "help": {
+  "saltong-help": {
     "help": "Tulong",
     "summary": "Hulaan ang salita sa loob ng {{numTries}} na tira.\n\nPagkatapos ng bawat tira, mag-iiba ang kulay ng mga tiles na nagpapakita kung gaano kalapit ang hula mo sa tamang sagot.",
     "ex1": "Ang letrang {{letter}} ay nasa salita at nasa tamang pwesto",
