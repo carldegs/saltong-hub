@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -12,7 +16,8 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { Spinner } from 'phosphor-react';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useInterval } from 'usehooks-ts';
 
 import useLogin from '../hooks/useLogin';
 import { authProviders } from '../lib/firebase';
@@ -23,7 +28,22 @@ const SignupPage: React.FC = () => {
     handleLogin,
     authState: [user, loading],
     isPopupOpen,
-  } = useLogin();
+    error,
+  } = useLogin(true);
+  const errorMessage = useMemo(() => {
+    switch (error?.code) {
+      case 'auth/credential-already-in-use':
+        return 'Account already created. Log in instead.';
+      default:
+        return error?.message;
+    }
+  }, [error?.code, error?.message]);
+
+  useInterval(() => {
+    if (user && !user.isAnonymous) {
+      router.push((router.query.from as string) || '/');
+    }
+  }, 1000);
 
   if (loading) {
     return (
@@ -33,8 +53,8 @@ const SignupPage: React.FC = () => {
     );
   }
 
-  if (user) {
-    router.push('/');
+  if (user && !user.isAnonymous) {
+    router.push((router.query.from as string) || '/');
   }
 
   return (
@@ -65,6 +85,13 @@ const SignupPage: React.FC = () => {
           >
             SIGN UP
           </Heading>
+          {errorMessage && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
           <Stack w="full" spacing={4}>
             {Object.values(authProviders).map(({ name, icon, provider }) => (
               <Button
@@ -75,15 +102,27 @@ const SignupPage: React.FC = () => {
                 leftIcon={
                   <Image src={icon} alt={`${name}-icon`} boxSize="24px" />
                 }
-                onClick={() => {
-                  handleLogin(provider);
+                onClick={async () => {
+                  await handleLogin(provider);
                 }}
                 isDisabled={isPopupOpen}
               >
                 {`Sign up with ${name}`}
               </Button>
             ))}
-            <Link as={NextLink} href="/login" textAlign="center" color="teal">
+            <Link
+              as={NextLink}
+              href={
+                {
+                  pathname: '/login',
+                  query: router.query.from && {
+                    from: router.query.from,
+                  },
+                } as any
+              }
+              textAlign="center"
+              color="teal"
+            >
               Already have an account? Log in instead.
             </Link>
           </Stack>

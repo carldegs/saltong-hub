@@ -33,8 +33,8 @@ const LoginPage: React.FC = () => {
     );
   }
 
-  if (user) {
-    router.push('/');
+  if (user && !user.isAnonymous) {
+    router.push((router.query.from as string) || '/');
   }
 
   return (
@@ -83,7 +83,19 @@ const LoginPage: React.FC = () => {
                 {`Log in with ${name}`}
               </Button>
             ))}
-            <Link as={NextLink} href="/signup" textAlign="center" color="teal">
+            <Link
+              as={NextLink}
+              href={
+                {
+                  pathname: '/signup',
+                  query: router.query.from && {
+                    from: router.query.from,
+                  },
+                } as any
+              }
+              textAlign="center"
+              color="teal"
+            >
               Don&apos;t have an account? Create one now.
             </Link>
           </Stack>

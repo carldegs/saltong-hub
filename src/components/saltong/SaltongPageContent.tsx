@@ -1,9 +1,11 @@
 import {
   Box,
+  Button,
   Container,
   Divider,
   Flex,
   Heading,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -11,19 +13,26 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Spacer,
   Stack,
   Text,
   useDisclosure,
+  Icon,
 } from '@chakra-ui/react';
+import { signInAnonymously } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
-import React, { ReactElement, useMemo } from 'react';
+import { useRouter } from 'next/router';
+import { X } from 'phosphor-react';
+import React, { ReactElement, useMemo, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { GAME_MODE_DATA } from '../../constants/gameList';
 import { SALTONG_DATA } from '../../constants/saltong';
 import { useSaltong } from '../../hooks/useSaltong';
 import { useSaltongTheme } from '../../hooks/useSaltongTheme';
+import { auth } from '../../lib/firebase';
 import {
   LetterData,
   LetterStatus,
@@ -186,6 +195,7 @@ export const SaltongPageContent: React.FC<{
   mode: SaltongMode;
   dateId?: string;
 }> = ({ mode, dateId }) => {
+  const router = useRouter();
   const data = useSaltong(mode, dateId);
   const { getLetterStatusBaseColor } = useSaltongTheme();
   const keyboardProps = useMemo(
@@ -202,6 +212,19 @@ export const SaltongPageContent: React.FC<{
     [data.letterListStatus, getLetterStatusBaseColor]
   );
   const helpModal = useDisclosure();
+  const [userClosedSignupBanner, setUserClosedSignupBanner] = useState(false);
+  const [user, authLoading] = useAuthState(auth, {
+    onUserChanged: async (user) => {
+      if (!user) {
+        await signInAnonymously(auth);
+      }
+    },
+  });
+  const showSignupBanner = useMemo(
+    () =>
+      !userClosedSignupBanner && !authLoading && (!user || user.isAnonymous),
+    [authLoading, user, userClosedSignupBanner]
+  );
 
   return (
     <>
@@ -214,6 +237,39 @@ export const SaltongPageContent: React.FC<{
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {showSignupBanner && (
+        <Box w="full" bg="blue.200" py={1} fontSize={{ base: 'sm', sm: 'md' }}>
+          <Container maxW="container.xl" as={Flex} align="center">
+            <Text color="blue.800">
+              Sync your stats across multiple devices
+            </Text>
+            <Spacer />
+            <Button
+              colorScheme="blue"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                router.push({
+                  pathname: '/signup',
+                  query: { from: router.asPath },
+                });
+              }}
+            >
+              Sign Up
+            </Button>
+            <IconButton
+              aria-label="close"
+              icon={<Icon as={X} />}
+              colorScheme="blue"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setUserClosedSignupBanner(true);
+              }}
+            />
+          </Container>
+        </Box>
+      )}
       <SaltongHelpModal gameMode={mode} {...helpModal} />
       <Container
         maxW="container.xl"

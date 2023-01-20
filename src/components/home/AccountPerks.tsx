@@ -85,7 +85,7 @@ export const AccountPerks = () => {
         colorScheme="green"
         size="lg"
         onClick={() => {
-          router.push('/signup');
+          router.push({ pathname: '/signup', query: { from: router.asPath } });
         }}
         w="full"
         maxW="600px"

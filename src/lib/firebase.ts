@@ -26,6 +26,9 @@ const firebaseConfig = {
   measurementId: 'G-88TNQKC5LK',
 };
 
+// TODO: Add Yahoo provider
+// TODO: Add Twitter provider
+// TODO: Setup FB app access
 export const authProviders = {
   google: {
     name: 'Google',

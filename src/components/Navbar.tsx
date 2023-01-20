@@ -80,7 +80,7 @@ const AuthNav: React.FC = () => {
     );
   }
 
-  if (user) {
+  if (user && !user.isAnonymous) {
     return (
       <HStack>
         <Avatar
@@ -112,7 +112,10 @@ const AuthNav: React.FC = () => {
       colorScheme="teal"
       borderRadius="xl"
       onClick={() => {
-        router.push('/login');
+        router.push({
+          pathname: '/login',
+          query: { from: router.asPath },
+        });
       }}
       variants={{
         large: {
