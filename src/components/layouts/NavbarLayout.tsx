@@ -1,6 +1,6 @@
 import React, { ComponentProps, ReactNode } from 'react';
 
-import Navbar from './Navbar';
+import Navbar from '../Navbar';
 
 const NavbarLayout: React.FC<{
   children: ReactNode;

@@ -31,42 +31,12 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import {
-  BugBeetle,
-  HandWaving,
-  Lifebuoy,
-  List,
-  List as ListIcon,
-} from 'phosphor-react';
+import { List, List as ListIcon } from 'phosphor-react';
 import React from 'react';
 
+import { GLOBAL_MODALS_DATA } from '../constants/globalModals';
 import { GameButton } from './GameButton';
 import { NAVBAR_LIST } from './Navbar';
-
-// TODO: MOVE
-export const MENU_OPTIONS = [
-  {
-    icon: BugBeetle,
-    header: 'Report Issues',
-    subheader: 'Report bugs and missing words',
-    color: 'teal',
-    hash: 'report',
-  },
-  {
-    icon: HandWaving,
-    header: 'About',
-    subheader: 'More info about Saltong Hub',
-    color: 'red',
-    hash: 'about',
-  },
-  {
-    icon: Lifebuoy,
-    header: 'Contribute',
-    subheader: 'Help keep the site running!',
-    color: 'purple',
-    hash: 'contribute',
-  },
-];
 
 export const NavbarDrawer: React.FC = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -127,40 +97,42 @@ export const NavbarDrawer: React.FC = () => {
           <Heading fontSize="sm" ml={3} py={1} letterSpacing="wider">
             PAGES
           </Heading>
-          {MENU_OPTIONS.map(({ icon, header, subheader, color, hash }) => (
-            <HStack
-              borderRadius="md"
-              p={3}
-              userSelect="none"
-              cursor="pointer"
-              spacing={3}
-              _hover={{ bg: 'gray.100' }}
-              key={`menu-option-${header}`}
-              onClick={() => {
-                router.push({ hash });
-                onClose();
-              }}
-            >
-              <Flex
-                align="center"
-                justify="center"
+          {GLOBAL_MODALS_DATA.map(
+            ({ icon, header, subheader, color, hash }) => (
+              <HStack
                 borderRadius="md"
-                boxSize="40px"
-                bg={`${color}.300`}
+                p={3}
+                userSelect="none"
+                cursor="pointer"
+                spacing={3}
+                _hover={{ bg: 'gray.100' }}
+                key={`menu-option-${header}`}
+                onClick={() => {
+                  router.push({ hash });
+                  onClose();
+                }}
               >
-                <Icon
-                  as={icon}
-                  weight="duotone"
-                  color={`var(--chakra-colors-${color}-800)`}
-                  fontSize="2xl"
-                />
-              </Flex>
-              <Stack spacing={0}>
-                <Text fontWeight="bold">{header}</Text>
-                <Text fontSize="sm">{subheader}</Text>
-              </Stack>
-            </HStack>
-          ))}
+                <Flex
+                  align="center"
+                  justify="center"
+                  borderRadius="md"
+                  boxSize="40px"
+                  bg={`${color}.300`}
+                >
+                  <Icon
+                    as={icon}
+                    weight="duotone"
+                    color={`var(--chakra-colors-${color}-800)`}
+                    fontSize="2xl"
+                  />
+                </Flex>
+                <Stack spacing={0}>
+                  <Text fontWeight="bold">{header}</Text>
+                  <Text fontSize="sm">{subheader}</Text>
+                </Stack>
+              </HStack>
+            )
+          )}
         </Stack>
         <Stack my={3} pl={4} spacing={1}>
           <Heading fontSize="sm" py={1} mb={2} letterSpacing="wider">
@@ -243,7 +215,7 @@ export const NavbarDrawer: React.FC = () => {
         </Drawer>
       </Show>
       <Show above="md">
-        <Popover isOpen={isOpen} onClose={onClose}>
+        <Popover isOpen={isOpen} onClose={onClose} isLazy>
           <PopoverTrigger>{Trigger}</PopoverTrigger>
           <Portal>
             <PopoverContent w="full" maxW="600px" right={8} top={4}>

@@ -31,7 +31,7 @@ import {
 } from '../../models/saltong/types';
 import { Keyboard } from '../Keyboard';
 import { Loader } from '../Loader';
-import NavbarLayout from '../NavbarLayout';
+import NavbarLayout from '../layouts/NavbarLayout';
 import SaltongGrid from './SaltongGrid';
 import { SaltongHeader } from './SaltongHeader';
 import SaltongRow from './SaltongRow';

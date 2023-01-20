@@ -6,7 +6,8 @@ import type { AppProps } from 'next/app';
 import { ReactElement, ReactNode, useEffect } from 'react';
 
 import nextI18NextConfig from '../../next-i18next.config';
-import NavbarLayout from '../components/NavbarLayout';
+import GlobalModalsLayout from '../components/layouts/GlobalModalsLayout';
+import NavbarLayout from '../components/layouts/NavbarLayout';
 import '../lib/firebase';
 import { firebaseApp } from '../lib/firebase';
 
@@ -37,7 +38,11 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   }, []);
 
   return (
-    <ChakraProvider>{getLayout(<Component {...pageProps} />)}</ChakraProvider>
+    <ChakraProvider>
+      <GlobalModalsLayout>
+        {getLayout(<Component {...pageProps} />)}
+      </GlobalModalsLayout>
+    </ChakraProvider>
   );
 };
 
