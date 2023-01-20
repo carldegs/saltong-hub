@@ -1,6 +1,6 @@
 {
   "name": "saltong-hub",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "commit": "lint-staged && cz"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.4.6",
