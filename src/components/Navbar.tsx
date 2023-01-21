@@ -13,6 +13,7 @@ import {
   Show,
   BoxProps,
   Flex,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   motion,
@@ -131,19 +132,6 @@ const AuthNav: React.FC = () => {
   );
 };
 
-const wrapperVariants: Variants = {
-  large: {
-    paddingTop: 'var(--chakra-space-4)',
-    paddingBottom: 'var(--chakra-space-4)',
-    background: 'rgba(255,255,255,0)',
-  },
-  small: {
-    paddingTop: 'var(--chakra-space-2)',
-    paddingBottom: 'var(--chakra-space-2)',
-    background: 'rgba(255,255,255,1)',
-  },
-};
-
 const DefaultNavbarTitle = (
   <Flex>
     <Heading
@@ -188,6 +176,14 @@ const Navbar: React.FC<
   const router = useRouter();
   const { scrollY } = useScroll();
   const [small, setSmall] = useState(isSmall);
+  const navBgSmall = useColorModeValue(
+    'rgba(255,255,255,1)',
+    'rgba(26, 32, 44, 1)'
+  );
+  const navBgLarge = useColorModeValue(
+    'rgba(255,255,255,0)',
+    'rgba(26, 32, 44, 0)'
+  );
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setSmall(isSmall ? true : latest > 50);
@@ -202,7 +198,18 @@ const Navbar: React.FC<
       as={motion.nav}
       pos="sticky"
       top={0}
-      variants={wrapperVariants}
+      variants={{
+        large: {
+          paddingTop: 'var(--chakra-space-4)',
+          paddingBottom: 'var(--chakra-space-4)',
+          background: navBgLarge,
+        },
+        small: {
+          paddingTop: 'var(--chakra-space-2)',
+          paddingBottom: 'var(--chakra-space-2)',
+          background: navBgSmall,
+        },
+      }}
       initial="large"
       animate={small ? 'small' : 'large'}
       zIndex="banner"

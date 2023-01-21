@@ -1,4 +1,11 @@
-import { BoxProps, Container, Flex, Spacer, Text } from '@chakra-ui/react';
+import {
+  BoxProps,
+  Container,
+  Flex,
+  Spacer,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { ArrowElbowDownLeft, Backspace } from 'phosphor-react';
 import React from 'react';
@@ -10,13 +17,16 @@ interface Props {
 }
 const keyboardRows = ['qwertyuiop', '_asdfghjkl_', '*zxcvbnm<'];
 export const Keyboard: React.FC<Props> = ({ letterProps, onClick }) => {
+  const bg = useColorModeValue('white', 'gray.800');
+  const keyBg = useColorModeValue('gray.100', 'gray.600');
+
   return (
     <Container
       maxW="container.sm"
       centerContent
       py={1}
       px={{ base: 1 }}
-      bg="white"
+      bg={bg}
     >
       {keyboardRows.map((row, i) => (
         <Flex key={i} w="full" justify="center" align="center" my={1}>
@@ -38,7 +48,7 @@ export const Keyboard: React.FC<Props> = ({ letterProps, onClick }) => {
                 align="center"
                 justify="center"
                 cursor="pointer"
-                bg="gray.100"
+                bg={keyBg}
                 mx={1}
                 borderRadius="md"
                 whileHover={{ scale: 1.1 }}

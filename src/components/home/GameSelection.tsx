@@ -1,4 +1,10 @@
-import { Box, Container, SimpleGrid, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  SimpleGrid,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
 import GAME_MODE_LIST, { ARCHIVES_DATA } from '../../constants/gameList';
@@ -7,8 +13,9 @@ import { GameButton } from '../GameButton';
 const GAME_SELECTION_LIST = [...GAME_MODE_LIST, ARCHIVES_DATA];
 export const GameSelection = () => {
   const router = useRouter();
+  const bg = useColorModeValue('gray.100', 'gray.900');
   return (
-    <Box bg="gray.100" pt="72px" mt="-72px">
+    <Box bg={bg} pt="72px" mt="-72px">
       <Container maxW="container.xl" centerContent py={6}>
         <Text fontWeight="bold" letterSpacing="wider">
           SELECT A GAME TO PLAY
