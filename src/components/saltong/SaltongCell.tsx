@@ -1,7 +1,8 @@
 import { Box, Flex, FlexProps, Text } from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 
+import { useSaltongTheme } from '../../hooks/useSaltongTheme';
 import { LetterStatus } from '../../models/saltong/types';
 
 // TODO: MOVE
@@ -15,27 +16,22 @@ export const STATUSES: Record<
   [LetterStatus.wrong]: {
     base: {
       bg: 'gray.400',
-      // color: 'white',
     },
   },
   [LetterStatus.correct]: {
     base: {
       bg: 'green.400',
-      // color: 'white',
     },
     highContrast: {
       bg: '#0077bb',
-      // color: 'white',
     },
   },
   [LetterStatus.wrongSpot]: {
     base: {
       bg: 'orange.400',
-      // color: 'white',
     },
     highContrast: {
       bg: '#ee7733',
-      // color: 'white',
     },
   },
   [LetterStatus.none]: {
@@ -88,16 +84,18 @@ const variants: Variants = {
   },
 };
 
-const SaltongCell: React.FC<Props> = ({
-  status = 'initial',
-  isHighContrast = false,
-  children,
-}) => {
-  const statusPropsGroup = STATUSES[status];
-  const statusProps =
-    isHighContrast && statusPropsGroup?.highContrast
-      ? statusPropsGroup.highContrast
-      : statusPropsGroup.base;
+const SaltongCell: React.FC<Props> = ({ status = 'initial', children }) => {
+  // const statusPropsGroup = STATUSES[status];
+  // const statusProps =
+  //   isHighContrast && statusPropsGroup?.highContrast
+  //     ? statusPropsGroup.highContrast
+  //     : statusPropsGroup.base;
+
+  const { getCellStyle, getLetterStatusBaseColor } = useSaltongTheme();
+  const statusProps = useMemo(
+    () => getCellStyle(status),
+    [getCellStyle, status]
+  );
 
   return (
     <Flex
@@ -107,7 +105,6 @@ const SaltongCell: React.FC<Props> = ({
       fontWeight="semibold"
       pos="relative"
       overflow="hidden"
-      bg="gray.100"
       as={motion.div}
       variants={{
         hide: {
@@ -123,7 +120,9 @@ const SaltongCell: React.FC<Props> = ({
         },
       }}
       boxSize={{ base: 10, md: 12 }}
-      {...(status === 'active' || status === 'active-blur' ? statusProps : {})}
+      {...(status === 'active' || status === 'active-blur'
+        ? statusProps
+        : getCellStyle(LetterStatus.none))}
     >
       <Box
         as={motion.div}
@@ -131,7 +130,7 @@ const SaltongCell: React.FC<Props> = ({
         pos="absolute"
         zIndex={0}
         variants={variants}
-        {...statusProps}
+        bg={getLetterStatusBaseColor(status)}
       />
       <Text
         as={motion.p}

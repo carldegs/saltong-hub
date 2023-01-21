@@ -1,4 +1,11 @@
-import { Flex, Icon, Image, Stack, Text } from '@chakra-ui/react';
+import {
+  Flex,
+  Icon,
+  Image,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import React from 'react';
 
 import { GameModeData } from '../constants/gameList';
@@ -10,12 +17,13 @@ export const GameButton: React.FC<
     size?: 'sm' | 'md';
   }
 > = ({ name, icon, color, onClick, size = 'md' }) => {
+  const hoverBg = useColorModeValue('gray.200', 'gray.700');
   return (
     <Stack
       p={3}
       borderRadius="lg"
       _hover={{
-        bg: `gray.200`,
+        bg: hoverBg,
       }}
       transition="background 0.3s ease"
       align="center"

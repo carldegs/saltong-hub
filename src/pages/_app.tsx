@@ -1,4 +1,3 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { NextPage } from 'next';
 import { appWithTranslation } from 'next-i18next';
@@ -6,6 +5,7 @@ import type { AppProps } from 'next/app';
 import { ReactElement, ReactNode, useEffect } from 'react';
 
 import nextI18NextConfig from '../../next-i18next.config';
+import { Chakra } from '../components/Chakra';
 import GlobalModalsLayout from '../components/layouts/GlobalModalsLayout';
 import NavbarLayout from '../components/layouts/NavbarLayout';
 import '../lib/firebase';
@@ -38,11 +38,11 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   }, []);
 
   return (
-    <ChakraProvider>
+    <Chakra cookies={pageProps.cookies}>
       <GlobalModalsLayout>
         {getLayout(<Component {...pageProps} />)}
       </GlobalModalsLayout>
-    </ChakraProvider>
+    </Chakra>
   );
 };
 

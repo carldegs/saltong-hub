@@ -27,6 +27,8 @@ import {
   FormControl,
   FormLabel,
   Switch,
+  useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
@@ -35,6 +37,7 @@ import { List, List as ListIcon } from 'phosphor-react';
 import React from 'react';
 
 import { GLOBAL_MODALS_DATA } from '../constants/globalModals';
+import useColorblindMode from '../hooks/useColorblindMode';
 import { GameButton } from './GameButton';
 import { NAVBAR_LIST } from './Navbar';
 
@@ -43,6 +46,10 @@ export const NavbarDrawer: React.FC = () => {
   const router = useRouter();
   const trans = useTranslation('common');
   const i18n = trans[1];
+  const { colorMode, toggleColorMode } = useColorMode();
+  const gameButtonsBg = useColorModeValue('gray.100', 'gray.800');
+  const modalButtonsBg = useColorModeValue('gray.100', 'gray.800');
+  const [colorblindMode, setColorblindMode] = useColorblindMode();
 
   const onToggleLanguageClick = (newLocale: string) => {
     const { pathname, asPath, query } = router;
@@ -57,7 +64,7 @@ export const NavbarDrawer: React.FC = () => {
             base: 3,
             lg: 6,
           }}
-          bg="gray.50"
+          bg={gameButtonsBg}
           mx={{ base: -6, md: -3 }}
           px={{ base: 6, md: 3 }}
           pt={{ base: 8, md: 4 }}
@@ -89,9 +96,9 @@ export const NavbarDrawer: React.FC = () => {
           my={3}
           borderRight={{
             base: undefined,
-            md: '1px solid var(--chakra-colors-gray-200)',
+            lg: '1px solid var(--chakra-colors-gray-200)',
           }}
-          pr={2}
+          pr={{ base: 0, lg: 2 }}
           spacing={1}
         >
           <Heading fontSize="sm" ml={3} py={1} letterSpacing="wider">
@@ -105,7 +112,7 @@ export const NavbarDrawer: React.FC = () => {
                 userSelect="none"
                 cursor="pointer"
                 spacing={3}
-                _hover={{ bg: 'gray.100' }}
+                _hover={{ bg: modalButtonsBg }}
                 key={`menu-option-${header}`}
                 onClick={() => {
                   router.push({ hash });
@@ -170,14 +177,24 @@ export const NavbarDrawer: React.FC = () => {
                 Dark Mode
               </FormLabel>
               <Spacer />
-              <Switch id="dark-mode" />
+              <Switch
+                id="dark-mode"
+                isChecked={colorMode === 'dark'}
+                onChange={toggleColorMode}
+              />
             </FormControl>
             <FormControl display="flex" alignItems="center">
               <FormLabel htmlFor="dark-mode" mb="0" fontWeight="normal">
                 Colorblind Mode
               </FormLabel>
               <Spacer />
-              <Switch id="dark-mode" />
+              <Switch
+                id="colorblind-mode"
+                isChecked={colorblindMode}
+                onChange={() => {
+                  setColorblindMode(!colorblindMode);
+                }}
+              />
             </FormControl>
           </Stack>
         </Stack>

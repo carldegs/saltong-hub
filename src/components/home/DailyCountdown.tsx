@@ -4,9 +4,9 @@ import {
   Skeleton,
   useInterval,
   Flex,
-  GridItem,
+  useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { GAME_MODE_DATA } from '../../constants/gameList';
 import { formatShortDuration, getDurationToNextDay } from '../../utils/time';
@@ -20,6 +20,11 @@ export const DAILY_DASHBOARD_DATA = [
 
 export function DailyCountdown() {
   const [dailyTimeLeft, setDailyTimeLeft] = useState<string>();
+  const bg = useColorModeValue('gray.100', 'gray.700');
+
+  useEffect(() => {
+    setDailyTimeLeft(formatShortDuration(getDurationToNextDay()));
+  }, []);
 
   useInterval(() => {
     setDailyTimeLeft(formatShortDuration(getDurationToNextDay()));
@@ -33,28 +38,28 @@ export function DailyCountdown() {
   }, []);
 
   return (
-    <Skeleton isLoaded={!!dailyTimeLeft} as={GridItem}>
-      <Flex
-        flexDir={{
-          base: 'column',
-        }}
-        px={{
-          base: 8,
-          md: 12,
-        }}
-        py={6}
-        bg="gray.100"
-        borderRadius="lg"
-      >
-        <Text mb={4} fontSize="lg">
+    <Flex
+      flexDir={{
+        base: 'column',
+      }}
+      px={{
+        base: 8,
+        md: 10,
+      }}
+      py={6}
+      bg={bg}
+      borderRadius="lg"
+    >
+      <Skeleton isLoaded={!!dailyTimeLeft} maxW="250px">
+        <Text fontSize="lg">
           Ends in <b>{dailyTimeLeft}</b>
         </Text>
-        <HStack spacing={0} justify="center" w="full">
-          {dailyDashboardData.map((data) => (
-            <GameRoundButton key={data.name} {...data} />
-          ))}
-        </HStack>
-      </Flex>
-    </Skeleton>
+      </Skeleton>
+      <HStack spacing={0} justify="center" w="full" mt={4}>
+        {dailyDashboardData.map((data) => (
+          <GameRoundButton key={data.name} {...data} />
+        ))}
+      </HStack>
+    </Flex>
   );
 }

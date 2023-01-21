@@ -294,7 +294,7 @@ export const SaltongPageContent: React.FC<{
         )}
       </Container>
 
-      <Box pos="fixed" mx="auto" bottom={0} w="full">
+      <Box pos="fixed" zIndex={10} mx="auto" bottom={0} w="full">
         <Keyboard
           letterProps={keyboardProps}
           onClick={(key) => {
