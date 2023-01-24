@@ -19,13 +19,15 @@ import {
   useDisclosure,
   Icon,
 } from '@chakra-ui/react';
+import { format } from 'date-fns';
 import { signInAnonymously } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { X } from 'phosphor-react';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { GAME_MODE_DATA } from '../../constants/gameList';
@@ -38,12 +40,15 @@ import {
   LetterStatus,
   SaltongMode,
 } from '../../models/saltong/types';
+import { getPhTime } from '../../utils/time';
 import { Keyboard } from '../Keyboard';
 import { Loader } from '../Loader';
 import NavbarLayout from '../layouts/NavbarLayout';
 import SaltongGrid from './SaltongGrid';
 import { SaltongHeader } from './SaltongHeader';
 import SaltongRow from './SaltongRow';
+
+const UnathorizedModal = React.lazy(() => import('../UnauthorizedModal'));
 
 const EXAMPLE_1: Record<SaltongMode, LetterData[]> = {
   main: [
@@ -196,7 +201,31 @@ export const SaltongPageContent: React.FC<{
   dateId?: string;
 }> = ({ mode, dateId }) => {
   const router = useRouter();
-  const data = useSaltong(mode, dateId);
+  const [user, authLoading] = useAuthState(auth, {
+    onUserChanged: async (user) => {
+      if (!user) {
+        await signInAnonymously(auth);
+      }
+    },
+  });
+
+  const id = useMemo(() => {
+    if (dateId) {
+      return dateId;
+    }
+
+    if (router.query.date && typeof router.query.date === 'string') {
+      if (!authLoading && (!user || user.isAnonymous)) {
+        return undefined;
+      }
+
+      return router.query.date;
+    }
+
+    return format(getPhTime(), 'yyyy-MM-dd');
+  }, [authLoading, dateId, router.query.date, user]);
+
+  const data = useSaltong(mode, id);
   const { getLetterStatusBaseColor } = useSaltongTheme();
   const keyboardProps = useMemo(
     () =>
@@ -213,17 +242,16 @@ export const SaltongPageContent: React.FC<{
   );
   const helpModal = useDisclosure();
   const [userClosedSignupBanner, setUserClosedSignupBanner] = useState(false);
-  const [user, authLoading] = useAuthState(auth, {
-    onUserChanged: async (user) => {
-      if (!user) {
-        await signInAnonymously(auth);
-      }
-    },
-  });
+
   const showSignupBanner = useMemo(
     () =>
       !userClosedSignupBanner && !authLoading && (!user || user.isAnonymous),
     [authLoading, user, userClosedSignupBanner]
+  );
+
+  const showUnauthorizedModal = useMemo(
+    () => !!router.query.date && !authLoading && (!user || user?.isAnonymous),
+    [authLoading, router.query.date, user]
   );
 
   return (
@@ -237,6 +265,44 @@ export const SaltongPageContent: React.FC<{
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {showUnauthorizedModal && (
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        <UnathorizedModal isOpen={showUnauthorizedModal} onClose={() => {}}>
+          <Stack w="full" spacing={2}>
+            <Text textAlign="center" pb={4}>
+              You need an account to play previous rounds of{' '}
+              {data.gameModeData.fullName || data.gameModeData.name}
+            </Text>
+            <Stack
+              direction={{ base: 'column', md: 'row' }}
+              spacing={2}
+              align="center"
+            >
+              <Button
+                as={Link}
+                href={{ pathname: '/signup', query: { from: router.asPath } }}
+                colorScheme="teal"
+                w="full"
+              >
+                Create Account
+              </Button>
+              <Button
+                as={Link}
+                href={{ pathname: '/login', query: { from: router.asPath } }}
+                w="full"
+              >
+                Sign In
+              </Button>
+            </Stack>
+            <Button as={Link} href={{ pathname: router.pathname }}>
+              Play Today&apos;s Game
+            </Button>
+            <Button as={Link} href="/" variant="ghost" size="sm">
+              Back To Home
+            </Button>
+          </Stack>
+        </UnathorizedModal>
+      )}
       {showSignupBanner && (
         <Box w="full" bg="blue.200" py={1} fontSize={{ base: 'sm', sm: 'md' }}>
           <Container maxW="container.xl" as={Flex} align="center">

@@ -29,7 +29,8 @@ export const getTimeOfDay = () => {
   return 'Araw';
 };
 
-export const getPhTime = () => utcToZonedTime(new Date(), 'Asia/Manila');
+export const getPhTime = (date = new Date()) =>
+  utcToZonedTime(date, 'Asia/Manila');
 
 export const getDurationToNextDay = () => {
   const phTime = getPhTime();

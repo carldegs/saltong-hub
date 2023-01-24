@@ -7,12 +7,13 @@ import {
   Image,
   Link,
   Stack,
+  useColorMode,
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { Spinner } from 'phosphor-react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import useLogin from '../hooks/useLogin';
 import { authProviders } from '../lib/firebase';
@@ -24,6 +25,8 @@ const LoginPage: React.FC = () => {
     authState: [user, loading],
     isPopupOpen,
   } = useLogin();
+  const { colorMode } = useColorMode();
+  const isLightMode = useMemo(() => colorMode === 'light', [colorMode]);
 
   if (loading) {
     return (
@@ -38,7 +41,7 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <Box h="100vh" bg="gray.100">
+    <Box h="100vh" bg={isLightMode ? 'gray.100' : 'gray.800'}>
       <Head>
         <title>Log In | Saltong Hub</title>
         <meta name="description" content="The place for Filipino word games" />
@@ -48,7 +51,7 @@ const LoginPage: React.FC = () => {
       <Container maxW="container.xl" centerContent>
         <Stack
           my={16}
-          bg="white"
+          bg={isLightMode ? 'white' : 'gray.900'}
           py={6}
           px={8}
           borderRadius="lg"
@@ -60,7 +63,7 @@ const LoginPage: React.FC = () => {
           <Heading
             fontSize="2xl"
             letterSpacing="widest"
-            color="teal.600"
+            color={isLightMode ? 'teal.600' : 'teal.400'}
             mb={8}
           >
             LOG IN
