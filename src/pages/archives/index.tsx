@@ -4,33 +4,16 @@ import {
   Tabs,
   TabList,
   TabPanels,
-  Box,
   Select,
   HStack,
   Button,
   IconButton,
-  SimpleGrid,
   Text,
-  Divider,
   Stack,
-  useBreakpointValue,
   Heading,
   useColorMode,
 } from '@chakra-ui/react';
-import {
-  differenceInDays,
-  differenceInMilliseconds,
-  differenceInYears,
-  getDay,
-  getDaysInMonth,
-  getMonth,
-  getYear,
-  isSameDay,
-  format,
-  isTuesday,
-  isFriday,
-  differenceInCalendarWeeks,
-} from 'date-fns';
+import { differenceInYears, getMonth, getYear } from 'date-fns';
 import Head from 'next/head';
 import Link from 'next/link';
 import { CaretLeft, CaretRight } from 'phosphor-react';
@@ -38,136 +21,9 @@ import React, { useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { Loader } from '../../components/Loader';
-import GAME_MODE_LIST, { GAME_MODE_DATA } from '../../constants/gameList';
+import { MonthlyCalendar } from '../../components/archives/MonthlyCalendar';
+import GAME_MODE_LIST from '../../constants/gameList';
 import { auth } from '../../lib/firebase';
-import { getPhTime } from '../../utils/time';
-
-const WEEK_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
-const WeeklyHeader: React.FC = () => {
-  const weekList = useBreakpointValue([
-    WEEK_DAYS.map((w) => w[0]),
-    WEEK_DAYS,
-  ]) as string[];
-
-  return (
-    <>
-      {weekList.map((day, i) => (
-        <Text
-          key={`${day}-${i}`}
-          color="gray.500"
-          fontWeight="bold"
-          textAlign="center"
-          letterSpacing="widest"
-        >
-          {day}
-        </Text>
-      ))}
-    </>
-  );
-};
-
-const getDate = (month: number, day: number, year: number) =>
-  new Date(`${month + 1}-${day}-${year}`);
-
-const MonthlyCalendar: React.FC<{
-  month: number;
-  year: number;
-  currDate?: Date;
-  mode: string;
-}> = ({ month, year, currDate = getPhTime(), mode }) => {
-  const date = new Date(`${month + 1}-01-${year}`);
-  const numDaysInMonth = getDaysInMonth(date);
-  const firstDay = getDay(date);
-
-  const gameModeData = useMemo(() => GAME_MODE_DATA[mode], [mode]);
-
-  return (
-    <>
-      <SimpleGrid columns={7}>
-        <WeeklyHeader />
-      </SimpleGrid>
-      <Divider my={4} />
-      <SimpleGrid columns={7}>
-        {[...Array(firstDay).keys()].map((i) => (
-          <Box key={i} />
-        ))}
-        {[...Array(numDaysInMonth).keys()]
-          .map((day) => {
-            const currDay = day + 1;
-            const cDate = getDate(month, currDay, year);
-            let roundNum = -1;
-
-            const diffFromStartRound = differenceInDays(
-              getPhTime(cDate),
-              new Date(gameModeData.startDate)
-            );
-
-            if (mode !== 'hex') {
-              roundNum = diffFromStartRound;
-            } else if (
-              mode === 'hex' &&
-              (isTuesday(cDate) || isFriday(cDate)) &&
-              diffFromStartRound >= 0
-            ) {
-              roundNum =
-                differenceInCalendarWeeks(
-                  getPhTime(cDate),
-                  new Date(gameModeData.startDate),
-                  {
-                    weekStartsOn: 2,
-                  }
-                ) +
-                differenceInCalendarWeeks(
-                  getPhTime(cDate),
-                  new Date(gameModeData.startDate),
-                  {
-                    weekStartsOn: 5,
-                  }
-                ) +
-                1;
-            }
-
-            return {
-              day: currDay,
-              date: cDate,
-              roundNum: roundNum >= 0 ? roundNum : undefined,
-              isFuture: differenceInMilliseconds(currDate, cDate) < 0,
-            };
-          })
-          .map(({ day, date, roundNum, isFuture }) => (
-            <Box key={date.toISOString()} p={2}>
-              <Button
-                as={Link}
-                href={{
-                  pathname: gameModeData.path,
-                  query: isSameDay(currDate, date)
-                    ? {}
-                    : { date: format(date, 'yyyy-MM-dd') },
-                }}
-                boxSize={{ base: '45px', md: '52px' }}
-                borderRadius="full"
-                userSelect="none"
-                cursor="pointer"
-                isDisabled={!roundNum || isFuture}
-                variant={!roundNum || isFuture ? 'ghost' : 'solid'}
-                colorScheme={isSameDay(currDate, date) ? 'blue' : 'gray'}
-              >
-                <Stack spacing={0}>
-                  <Text>{day}</Text>
-                  {!!roundNum && !isFuture && (
-                    <Text fontSize="xs" opacity={0.7}>
-                      {roundNum}
-                    </Text>
-                  )}
-                </Stack>
-              </Button>
-            </Box>
-          ))}
-      </SimpleGrid>
-    </>
-  );
-};
 
 const MONTHS = [
   'January',
