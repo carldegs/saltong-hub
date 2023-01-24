@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/carldegs/saltong-hub/compare/v0.1.6...v0.1.7) (2023-01-24)
+
+
+### Features
+
+* **archives:** setup archives feature ([5844d26](https://github.com/carldegs/saltong-hub/commit/5844d263ad03f82e5867b2a4ef4b0cf5871ec26e))
+* **saltong:** fetch dictionary to check if guess is in word list ([7f5f4a2](https://github.com/carldegs/saltong-hub/commit/7f5f4a289a68cd71d3c8551901d1395d4b22dbca))
+
+
+### Bug Fixes
+
+* **archives:** fix archives issues ([529215f](https://github.com/carldegs/saltong-hub/commit/529215ffa0d723cda7c5a6974e06c7d28bd1ab01))
+* fixes ([4afd817](https://github.com/carldegs/saltong-hub/commit/4afd81777e2c1a844a42abd8fe3edc498f8dce75))
+
 ### [0.1.6](https://github.com/carldegs/saltong-hub/compare/v0.1.5...v0.1.6) (2023-01-21)
 
 
