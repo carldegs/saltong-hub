@@ -1,8 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { GAME_MODE_DATA } from '../constants/gameList';
 import { SALTONG_DATA } from '../constants/saltong';
+import { auth } from '../lib/firebase';
 import { LetterData, LetterStatus, SaltongMode } from '../models/saltong/types';
+import useSaltongGame from '../models/saltong/useSaltongGame';
 import useSaltongRound from '../models/saltong/useSaltongRound';
 import useDictionary from './useDictionary';
 
@@ -72,8 +75,16 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
     dateId
   );
   const roundData = useMemo(() => rData?.[0], [rData]);
-  const [history, setHistory] = useState<LetterData[][]>([]);
+  // const [history, setHistory] = useState<LetterData[][]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [user] = useAuthState(auth);
+  const { gameData, updateGame } = useSaltongGame(
+    mode,
+    dateId,
+    !user?.isAnonymous ? user?.uid : undefined
+  );
+  // TODO: Handle unauthorized users
+  const { history = [] } = gameData || {};
   const letterListStatus = useMemo(
     () => getLetterListStatus(history),
     [history]
@@ -115,15 +126,19 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
 
     const resp = checkAnswer(inputValue, roundData.word);
 
-    setHistory((h) => [...h, resp]);
+    // setHistory([...history, resp]);
     setInputValue('');
+
+    updateGame([...history, resp]);
   }, [
     dictionary,
+    history,
     inputValue,
     isFetchingDictionary,
     maxTurns,
     roundData?.word,
     turn,
+    updateGame,
     wordLen,
   ]);
 

@@ -16,12 +16,24 @@ import {
   isFriday,
   differenceInCalendarWeeks,
   differenceInCalendarDays,
+  startOfMonth,
+  endOfMonth,
 } from 'date-fns';
+import { collection, orderBy, query, where } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import { GAME_MODE_DATA } from '../../constants/gameList';
+import { auth, firestore } from '../../lib/firebase';
+import { SaltongMode } from '../../models/saltong/types';
+import {
+  getGameCollectionName,
+  saltongGameConverter,
+} from '../../models/saltong/useSaltongGame';
 import { getPhTime } from '../../utils/time';
+import { Loader } from '../Loader';
 import { WeeklyHeader } from './WeeklyHeader';
 
 const getDate = (month: number, day: number, year: number) =>
@@ -37,7 +49,28 @@ export const MonthlyCalendar: React.FC<{
   const numDaysInMonth = getDaysInMonth(date);
   const firstDay = getDay(date);
 
+  const [user] = useAuthState(auth);
   const gameModeData = useMemo(() => GAME_MODE_DATA[mode], [mode]);
+
+  const [data = [], isLoading] = useCollectionData(
+    mode && user?.uid
+      ? query(
+          collection(firestore, getGameCollectionName(mode as SaltongMode)),
+          where('uid', '==', user.uid),
+          where('dateId', '<=', format(endOfMonth(date), 'yyyy-MM-dd')),
+          where('dateId', '>=', format(startOfMonth(date), 'yyyy-MM-dd')),
+          orderBy('dateId')
+        ).withConverter(saltongGameConverter)
+      : undefined
+  );
+
+  const results = useMemo(() => {
+    return Object.fromEntries(data?.map((r) => [r.dateId, r]));
+  }, [data]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -86,14 +119,18 @@ export const MonthlyCalendar: React.FC<{
                 1;
             }
 
+            const cDateId = format(cDate, 'yyyy-MM-dd');
+
             return {
               day: currDay,
               date: cDate,
               roundNum: roundNum >= 0 ? roundNum : undefined,
               isFuture: differenceInMilliseconds(currDate, cDate) < 0,
+              dateId: cDateId,
+              result: results[cDateId],
             };
           })
-          .map(({ day, date, roundNum, isFuture }) => (
+          .map(({ day, date, roundNum, isFuture, dateId, result }) => (
             <Box key={date.toISOString()} p={2}>
               <Button
                 boxSize={{ base: '45px', md: '52px' }}
@@ -102,13 +139,19 @@ export const MonthlyCalendar: React.FC<{
                 cursor="pointer"
                 isDisabled={!roundNum || isFuture}
                 variant={!roundNum || isFuture ? 'ghost' : 'solid'}
-                colorScheme={isSameDay(currDate, date) ? 'blue' : 'gray'}
+                colorScheme={
+                  result?.isSolved
+                    ? 'green'
+                    : result?.history?.length
+                    ? 'orange'
+                    : isSameDay(currDate, date)
+                    ? 'blue'
+                    : 'gray'
+                }
                 onClick={() => {
                   router.push({
                     pathname: gameModeData.path,
-                    query: isSameDay(currDate, date)
-                      ? {}
-                      : { date: format(date, 'yyyy-MM-dd') },
+                    query: isSameDay(currDate, date) ? {} : { date: dateId },
                   });
                 }}
               >
