@@ -18,6 +18,7 @@ import {
   Text,
   useDisclosure,
   Icon,
+  useToast,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { signInAnonymously } from 'firebase/auth';
@@ -227,6 +228,7 @@ export const SaltongPageContent: React.FC<{
 
   const data = useSaltong(mode, id);
   const { getLetterStatusBaseColor } = useSaltongTheme();
+  const toast = useToast();
   const keyboardProps = useMemo(
     () =>
       Object.fromEntries(
@@ -365,7 +367,17 @@ export const SaltongPageContent: React.FC<{
           letterProps={keyboardProps}
           onClick={(key) => {
             if (key === 'Enter') {
-              data.solveWord();
+              try {
+                data.solveWord();
+              } catch (err) {
+                toast({
+                  description: (err as Error)?.message,
+                  status: 'error',
+                  position: 'top-left',
+                  duration: 1000,
+                  isClosable: true,
+                });
+              }
             } else {
               data.handleInputChange(
                 key === 'Backspace'

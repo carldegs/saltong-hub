@@ -4,6 +4,7 @@ import { GAME_MODE_DATA } from '../constants/gameList';
 import { SALTONG_DATA } from '../constants/saltong';
 import { LetterData, LetterStatus, SaltongMode } from '../models/saltong/types';
 import useSaltongRound from '../models/saltong/useSaltongRound';
+import useDictionary from './useDictionary';
 
 export const checkAnswer = (word: string, solution: string): LetterData[] => {
   const splitAnswer = word.toLowerCase().split('');
@@ -78,31 +79,53 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
     [history]
   );
 
+  const [dictionary, isFetchingDictionary] = useDictionary();
+
   const turn = useMemo(() => history.length, [history.length]);
-  const isLoading = useMemo(() => isFetchingRoundData, [isFetchingRoundData]);
+  const isLoading = useMemo(
+    () => isFetchingRoundData || isFetchingDictionary,
+    [isFetchingDictionary, isFetchingRoundData]
+  );
   const error = useMemo(() => roundDataError, [roundDataError]);
 
   const solveWord = useCallback(() => {
     if (turn >= maxTurns) {
-      console.error('Max turns played');
-      return;
+      throw new Error('Max turns played');
     }
 
     if (!roundData?.word) {
-      console.error('Cannot get round data');
-      return;
+      throw new Error('Cannot get round data');
     }
 
     if (inputValue.length !== wordLen) {
-      console.error(`Word must be ${wordLen} letters`);
-      return;
+      throw new Error(`Word must be ${wordLen} letters`);
+    }
+
+    if (isFetchingDictionary) {
+      throw new Error('Still fetching dictionary');
+    }
+
+    if (
+      !dictionary[wordLen]?.find(
+        (item) => item.toLowerCase() === inputValue.toLowerCase()
+      )
+    ) {
+      throw new Error('Not in word list');
     }
 
     const resp = checkAnswer(inputValue, roundData.word);
 
     setHistory((h) => [...h, resp]);
     setInputValue('');
-  }, [inputValue, maxTurns, roundData?.word, turn, wordLen]);
+  }, [
+    dictionary,
+    inputValue,
+    isFetchingDictionary,
+    maxTurns,
+    roundData?.word,
+    turn,
+    wordLen,
+  ]);
 
   const handleInputChange = useCallback(
     (value: string) => {
