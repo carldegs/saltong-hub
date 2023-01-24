@@ -1,4 +1,4 @@
-import { Input, Stack } from '@chakra-ui/react';
+import { Input, Stack, useToast } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useClickAnyWhere } from 'usehooks-ts';
 
@@ -17,6 +17,7 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
 }) => {
   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const [isBlurred, setBlurred] = useState(false);
+  const toast = useToast();
 
   const emptyLetters: LetterData[] = useMemo(
     () => [...Array(wordLen)].map(() => ['', LetterStatus.none]),
@@ -65,7 +66,16 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
           }
 
           if (e.key === 'Enter' && wordLen === inputValue.length) {
-            solveWord();
+            try {
+              solveWord();
+            } catch (err) {
+              toast({
+                description: (err as Error)?.message,
+                status: 'error',
+                position: 'top-left',
+                isClosable: true,
+              });
+            }
           }
         }}
         onCut={(e) => e.preventDefault()}
