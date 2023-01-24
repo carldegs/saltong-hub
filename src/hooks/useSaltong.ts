@@ -1,11 +1,9 @@
-import { format } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
 
 import { GAME_MODE_DATA } from '../constants/gameList';
 import { SALTONG_DATA } from '../constants/saltong';
 import { LetterData, LetterStatus, SaltongMode } from '../models/saltong/types';
 import useSaltongRound from '../models/saltong/useSaltongRound';
-import { getPhTime } from '../utils/time';
 
 export const checkAnswer = (word: string, solution: string): LetterData[] => {
   const splitAnswer = word.toLowerCase().split('');
@@ -66,10 +64,7 @@ export const getLetterListStatus = (history: LetterData[][]) => {
   return letters;
 };
 
-export const useSaltong = (
-  mode: SaltongMode,
-  dateId = format(getPhTime(), 'yyyy-MM-dd')
-) => {
+export const useSaltong = (mode: SaltongMode, dateId?: string) => {
   const { wordLen, maxTurns } = useMemo(() => SALTONG_DATA[mode], [mode]);
   const [rData, isFetchingRoundData, roundDataError] = useSaltongRound(
     mode,

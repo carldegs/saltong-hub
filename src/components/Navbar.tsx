@@ -51,6 +51,11 @@ const AuthNav: React.FC = () => {
   const [user, loading, error] = useAuthState(auth);
   const router = useRouter();
   const { handleLogout } = useLogin();
+  const [isMounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (error && !toast.isActive(AUTH_ERR_TOAST)) {
@@ -61,6 +66,10 @@ const AuthNav: React.FC = () => {
       });
     }
   }, [error, toast]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   if (loading) {
     return (

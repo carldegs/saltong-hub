@@ -11,6 +11,7 @@ import {
   Image,
   Link,
   Stack,
+  useColorMode,
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import NextLink from 'next/link';
@@ -38,6 +39,8 @@ const SignupPage: React.FC = () => {
         return error?.message;
     }
   }, [error?.code, error?.message]);
+  const { colorMode } = useColorMode();
+  const isLightMode = useMemo(() => colorMode === 'light', [colorMode]);
 
   useInterval(() => {
     if (user && !user.isAnonymous) {
@@ -58,7 +61,7 @@ const SignupPage: React.FC = () => {
   }
 
   return (
-    <Box h="100vh" bg="gray.100">
+    <Box h="100vh" bg={isLightMode ? 'gray.100' : 'gray.800'}>
       <Head>
         <title>Sign Up | Saltong Hub</title>
         <meta name="description" content="The place for Filipino word games" />
@@ -68,7 +71,7 @@ const SignupPage: React.FC = () => {
       <Container maxW="container.xl" centerContent>
         <Stack
           my={16}
-          bg="white"
+          bg={isLightMode ? 'white' : 'gray.900'}
           py={6}
           px={8}
           borderRadius="lg"
@@ -80,7 +83,7 @@ const SignupPage: React.FC = () => {
           <Heading
             fontSize="2xl"
             letterSpacing="widest"
-            color="teal.600"
+            color={isLightMode ? 'teal.600' : 'teal.400'}
             mb={8}
           >
             SIGN UP

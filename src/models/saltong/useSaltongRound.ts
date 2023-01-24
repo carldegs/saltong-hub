@@ -36,22 +36,15 @@ const converter: FirestoreDataConverter<SaltongRound> = {
 const getRoundCollectionName = (mode: SaltongMode) =>
   `saltong${mode.charAt(0).toUpperCase() + mode.slice(1)}Rounds`;
 
-// const roundCollRef = (mode: SaltongMode) =>
-//   collection(firestore, getRoundCollectionName(mode)).withConverter(converter);
-
-// const roundDocRef = (mode: SaltongMode, id: string) =>
-//   doc(firestore, getRoundCollectionName(mode), id).withConverter(converter);
-
-const useSaltongRound = (mode: SaltongMode, id: string) => {
-  // const docRef = useMemo(() => roundDocRef(mode, id), [id, mode]);
-  // return useDocumentData(docRef);
-  return useCollectionData(
-    query(
-      collection(firestore, getRoundCollectionName(mode)),
-      limit(1),
-      where('dateId', '==', id)
-    ).withConverter(converter)
+const useSaltongRound = (mode: SaltongMode, id?: string) =>
+  useCollectionData(
+    mode && id
+      ? query(
+          collection(firestore, getRoundCollectionName(mode)),
+          limit(1),
+          where('dateId', '==', id)
+        ).withConverter(converter)
+      : undefined
   );
-};
 
 export default useSaltongRound;

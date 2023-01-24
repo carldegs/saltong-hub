@@ -11,7 +11,7 @@ import React from 'react';
 import { GameModeData } from '../constants/gameList';
 
 export const GameButton: React.FC<
-  Omit<GameModeData, 'icon'> & {
+  Omit<GameModeData, 'icon' | 'startDate' | 'key'> & {
     icon: any;
     onClick?: () => void;
     size?: 'sm' | 'md';
