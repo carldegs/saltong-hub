@@ -10,7 +10,6 @@ export interface GameModeData {
   icon: string;
   fullName?: string;
   startDate: string;
-  key: string;
 }
 
 export const GAME_MODE_DATA: Record<string, GameModeData> = {
@@ -20,7 +19,6 @@ export const GAME_MODE_DATA: Record<string, GameModeData> = {
     color: 'green',
     icon: '/icon-192.png',
     startDate: '2022-01-14',
-    key: 'main',
   },
   max: {
     name: 'Max',
@@ -29,7 +27,6 @@ export const GAME_MODE_DATA: Record<string, GameModeData> = {
     color: 'red',
     icon: '/max.png',
     startDate: '2022-01-16',
-    key: 'max',
   },
   mini: {
     name: 'Mini',
@@ -38,7 +35,6 @@ export const GAME_MODE_DATA: Record<string, GameModeData> = {
     color: 'blue',
     icon: '/mini.png',
     startDate: '2022-01-16',
-    key: 'mini',
   },
   hex: {
     name: 'Hex',
@@ -47,7 +43,6 @@ export const GAME_MODE_DATA: Record<string, GameModeData> = {
     color: 'purple',
     icon: '/hex.png',
     startDate: '2022-01-21',
-    key: 'hex',
   },
 } as const;
 
@@ -58,6 +53,9 @@ export const ARCHIVES_DATA = {
   icon: Archive,
 };
 
-const GAME_MODE_LIST = Object.values(GAME_MODE_DATA);
+const GAME_MODE_LIST = Object.entries(GAME_MODE_DATA).map(([key, values]) => ({
+  key,
+  ...values,
+}));
 
 export default GAME_MODE_LIST;

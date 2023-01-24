@@ -141,7 +141,9 @@ const MonthlyCalendar: React.FC<{
                 as={Link}
                 href={{
                   pathname: gameModeData.path,
-                  query: { date: format(date, 'yyyy-MM-dd') },
+                  query: isSameDay(currDate, date)
+                    ? {}
+                    : { date: format(date, 'yyyy-MM-dd') },
                 }}
                 boxSize={{ base: '45px', md: '52px' }}
                 borderRadius="full"

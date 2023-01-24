@@ -27,7 +27,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { X } from 'phosphor-react';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { GAME_MODE_DATA } from '../../constants/gameList';
