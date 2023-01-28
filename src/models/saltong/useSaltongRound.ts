@@ -8,18 +8,14 @@ import {
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import { firestore, FirestoreData } from '../../lib/firebase';
-import { SaltongMode } from './types';
+import { SaltongMode, SaltongRound } from './types';
 
-export interface SaltongRound extends FirestoreData {
-  roundNum: number;
-  word: string;
-}
-
-const converter: FirestoreDataConverter<SaltongRound> = {
-  toFirestore({ roundNum, word }) {
+export const saltongRoundConverter: FirestoreDataConverter<SaltongRound> = {
+  toFirestore({ roundNum, word, dateId }) {
     return {
       roundNum,
       word,
+      dateId,
     };
   },
   fromFirestore(snap, options) {
@@ -43,7 +39,7 @@ const useSaltongRound = (mode: SaltongMode, id?: string) =>
           collection(firestore, getRoundCollectionName(mode)),
           limit(1),
           where('dateId', '==', id)
-        ).withConverter(converter)
+        ).withConverter(saltongRoundConverter)
       : undefined
   );
 

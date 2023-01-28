@@ -1,11 +1,9 @@
-export interface SaltongRound {
-  gameId: number;
-  word: string;
-}
+import { FirestoreData } from '../../lib/firebase';
 
-export interface SaltongGame {
-  roundId: string;
-  userId: string;
+export interface SaltongRound extends FirestoreData {
+  roundNum: number;
+  word: string;
+  dateId: string;
 }
 
 export type SaltongMode = 'mini' | 'max' | 'main';
@@ -18,3 +16,19 @@ export enum LetterStatus {
 }
 
 export type LetterData = [string, LetterStatus];
+
+export interface SaltongGame extends FirestoreData {
+  uid: string;
+  dateId: string;
+  history: LetterData[][];
+  startDate: number;
+  solveDate?: number;
+  isSolved: boolean;
+}
+
+export type FirestoreSaltongGame = Omit<
+  SaltongGame,
+  'history' | keyof FirestoreData
+> & {
+  history: string;
+};
