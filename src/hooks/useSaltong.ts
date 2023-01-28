@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { GAME_MODE_DATA } from '../constants/gameList';
@@ -75,27 +75,34 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
     dateId
   );
   const roundData = useMemo(() => rData?.[0], [rData]);
-  // const [history, setHistory] = useState<LetterData[][]>([]);
+  const [history, setHistory] = useState<LetterData[][]>([]);
   const [inputValue, setInputValue] = useState('');
   const [user] = useAuthState(auth);
-  const { gameData, updateGame } = useSaltongGame(
-    mode,
-    dateId,
-    !user?.isAnonymous ? user?.uid : undefined
-  );
+  const {
+    gameData,
+    updateGame,
+    isLoading: isFirebaseLoading,
+  } = useSaltongGame(mode, dateId, !user?.isAnonymous ? user?.uid : undefined);
   // TODO: Handle unauthorized users
-  const { history = [] } = gameData || {};
+  // const { history = [] } = gameData || {};
   const letterListStatus = useMemo(
     () => getLetterListStatus(history),
     [history]
   );
 
+  useEffect(() => {
+    if (!history?.length && gameData?.history?.length) {
+      setHistory(gameData.history);
+    }
+  }, [gameData?.history, gameData?.history?.length, history?.length]);
+
   const [dictionary, isFetchingDictionary] = useDictionary();
 
   const turn = useMemo(() => history.length, [history.length]);
-  const isLoading = useMemo(
-    () => isFetchingRoundData || isFetchingDictionary,
-    [isFetchingDictionary, isFetchingRoundData]
+  const isLoading = useMemo(() => isFetchingRoundData, [isFetchingRoundData]);
+  const isLoadingBackground = useMemo(
+    () => isFetchingDictionary || isFirebaseLoading,
+    [isFetchingDictionary, isFirebaseLoading]
   );
   const error = useMemo(() => roundDataError, [roundDataError]);
 
@@ -126,10 +133,10 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
 
     const resp = checkAnswer(inputValue, roundData.word);
 
-    // setHistory([...history, resp]);
+    const newHistory = [...history, resp];
     setInputValue('');
-
-    updateGame([...history, resp]);
+    setHistory(newHistory);
+    updateGame(newHistory);
   }, [
     dictionary,
     history,
@@ -168,6 +175,7 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
       handleInputChange,
       history,
       letterListStatus,
+      isLoadingBackground,
     }),
     [
       error,
@@ -175,6 +183,7 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
       history,
       inputValue,
       isLoading,
+      isLoadingBackground,
       letterListStatus,
       maxTurns,
       mode,

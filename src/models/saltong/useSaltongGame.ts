@@ -94,7 +94,10 @@ const useSaltongGame = (mode: SaltongMode, dateId?: string, uid?: string) => {
   );
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const isLoading = useMemo(() => isFetchingGameData, [isFetchingGameData]);
+  const isLoading = useMemo(
+    () => isFetchingGameData || isUpdating,
+    [isFetchingGameData, isUpdating]
+  );
 
   // TODO: Handle solveDate, isStartedFromArchive and isSolvedFromArchive
   const updateGame = useCallback(

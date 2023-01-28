@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   DarkMode,
   Heading,
@@ -6,6 +7,7 @@ import {
   Icon,
   Skeleton,
   Spacer,
+  Spinner,
   StackProps,
 } from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
@@ -17,6 +19,7 @@ import { GameModeData } from '../../constants/gameList';
 export const SaltongHeader: React.FC<
   StackProps & {
     isLoading?: boolean;
+    isLoadingBg?: boolean;
     gameModeData?: GameModeData;
     roundNum?: number | string;
     onHelpClick?: () => void;
@@ -24,6 +27,7 @@ export const SaltongHeader: React.FC<
   }
 > = ({
   isLoading,
+  isLoadingBg,
   gameModeData = {} as GameModeData,
   roundNum,
   onHelpClick,
@@ -46,6 +50,7 @@ export const SaltongHeader: React.FC<
       </Skeleton>
       <Spacer />
       <DarkMode>
+        <Box>{isLoadingBg && <Spinner color="gray.300" mr={4} mt={1} />}</Box>
         <Button
           size={{ base: 'sm', md: 'md' }}
           leftIcon={<Icon as={Question} weight="duotone" />}
