@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/carldegs/saltong-hub/compare/v0.1.7...v0.1.8) (2023-01-28)
+
+
+### Features
+
+* **saltong:** setup cloud save ([cc3b7c9](https://github.com/carldegs/saltong-hub/commit/cc3b7c94cc2367023624a7f9e035daad27445eb2))
+
+
+### Bug Fixes
+
+* optimize cloud save ([9685fc6](https://github.com/carldegs/saltong-hub/commit/9685fc637226b82d8bd7784b7d4c13f1946c8619))
+
 ### [0.1.7](https://github.com/carldegs/saltong-hub/compare/v0.1.6...v0.1.7) (2023-01-24)
 
 
