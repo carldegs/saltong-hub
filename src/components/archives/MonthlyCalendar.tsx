@@ -25,7 +25,7 @@ import React, { useMemo } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
-import { GAME_MODE_DATA } from '../../constants/gameList';
+import { GameMode, GAME_MODE_DATA } from '../../constants/gameList';
 import { auth, firestore } from '../../lib/firebase';
 import { SaltongMode } from '../../models/saltong/types';
 import {
@@ -42,7 +42,7 @@ export const MonthlyCalendar: React.FC<{
   month: number;
   year: number;
   currDate?: Date;
-  mode: string;
+  mode: GameMode;
 }> = ({ month, year, currDate = getPhTime(), mode }) => {
   const router = useRouter();
   const date = new Date(`${month + 1}-01-${year}`);

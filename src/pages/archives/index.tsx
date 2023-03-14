@@ -22,7 +22,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 import { Loader } from '../../components/Loader';
 import { MonthlyCalendar } from '../../components/archives/MonthlyCalendar';
-import GAME_MODE_LIST from '../../constants/gameList';
+import GAME_MODE_LIST, { GameMode } from '../../constants/gameList';
 import { auth } from '../../lib/firebase';
 
 const MONTHS = [
@@ -55,8 +55,8 @@ const ArchivesPage: React.FC = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(currMonth);
   const [selectedYear, setSelectedYear] = useState(currYear);
-  const selectedGameMode = useMemo(
-    () => GAME_MODE_LIST[tabIndex].key,
+  const selectedGameMode = useMemo<GameMode>(
+    () => GAME_MODE_LIST[tabIndex].key as GameMode,
     [tabIndex]
   );
   const { colorMode } = useColorMode();
