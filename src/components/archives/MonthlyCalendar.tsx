@@ -42,7 +42,7 @@ export const MonthlyCalendar: React.FC<{
   month: number;
   year: number;
   currDate?: Date;
-  mode: string;
+  mode: SaltongMode;
 }> = ({ month, year, currDate = getPhTime(), mode }) => {
   const router = useRouter();
   const date = new Date(`${month + 1}-01-${year}`);
