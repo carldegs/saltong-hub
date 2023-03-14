@@ -16,8 +16,7 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  StatProps,
-  useClipboard,
+  StatProps, // useClipboard,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { intervalToDuration } from 'date-fns';
