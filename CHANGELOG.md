@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9](https://github.com/carldegs/saltong-hub/compare/v0.1.8...v0.1.9) (2023-03-14)
+
+
+### Features
+
+* alpha setup ([85ba848](https://github.com/carldegs/saltong-hub/commit/85ba8484514cb1edd34965656cb0886c194e4bb5))
+
+
+### Bug Fixes
+
+* fix lint errors ([b5c1b84](https://github.com/carldegs/saltong-hub/commit/b5c1b8470f81091734ba587d6fcb0400e58f9ee8))
+* lint fixes ([efda7c3](https://github.com/carldegs/saltong-hub/commit/efda7c3be8f9003fb11193804ce7ed5e7dc33005))
+* lint fixes ([58d15c7](https://github.com/carldegs/saltong-hub/commit/58d15c788a712e1475dc8b16eac0e4783e3b40eb))
+
 ### [0.1.8](https://github.com/carldegs/saltong-hub/compare/v0.1.7...v0.1.8) (2023-01-28)
 
 
