@@ -62,7 +62,7 @@
     "standard-version": "^9.5.0"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
+    "src/**/*.{ts,tsx}": [
       "eslint --fix"
     ]
   },
