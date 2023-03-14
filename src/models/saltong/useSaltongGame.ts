@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { format } from 'date-fns';
 import {
+  collection,
   doc,
   FirestoreDataConverter,
   runTransaction,
@@ -9,6 +12,13 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 import { SALTONG_DATA } from '../../constants/saltong';
 import { firestore, FirestoreData } from '../../lib/firebase';
+import { checkIfGameOver, checkIfSolved } from '../../utils/saltong';
+import { getPhTime, getYesterdayDateId } from '../../utils/time';
+import { SaltongStatistics } from '../user/types';
+import {
+  userStatisticDoc,
+  userStatisticsConverter,
+} from '../user/useUserStatistics';
 import {
   FirestoreSaltongGame,
   LetterData,
@@ -99,12 +109,17 @@ const useSaltongGame = (mode: SaltongMode, dateId?: string, uid?: string) => {
     [isFetchingGameData, isUpdating]
   );
 
-  // TODO: Handle solveDate, isStartedFromArchive and isSolvedFromArchive
+  // TODO: Handle endDate, isStartedFromArchive and isSolvedFromArchive
   const updateGame = useCallback(
-    async (history: LetterData[][]) => {
+    async (history: LetterData[][], userStatisticId?: string) => {
       setIsUpdating(true);
 
       const gameRef = saltongGameDoc(mode, dateId, uid);
+      const userStatRef = (
+        userStatisticId
+          ? userStatisticDoc(userStatisticId)!
+          : doc(collection(firestore, 'gameStatistics'))
+      ).withConverter(userStatisticsConverter);
 
       if (!gameRef || !uid || !dateId) {
         return;
@@ -112,10 +127,15 @@ const useSaltongGame = (mode: SaltongMode, dateId?: string, uid?: string) => {
 
       await runTransaction(firestore, async (transaction) => {
         const gameSnap = await transaction.get(gameRef);
+        const userStatSnap = await transaction.get<SaltongStatistics>(
+          userStatRef as any
+        );
 
-        const isSolved = !history
-          .at(-1)
-          ?.some(([, status]) => status !== LetterStatus.correct);
+        const isSolved = checkIfSolved(history);
+        const isGameOver = checkIfGameOver(history, mode);
+
+        const todayDateId = format(getPhTime(), 'yyyy-MM-dd');
+        const isCurrGame = dateId === todayDateId;
 
         if (!gameSnap.exists()) {
           transaction.set(gameRef, {
@@ -124,21 +144,84 @@ const useSaltongGame = (mode: SaltongMode, dateId?: string, uid?: string) => {
             history,
             startDate: new Date().getTime(),
             isSolved,
+            solvedOnTime: isSolved && isCurrGame,
+            ...(isSolved || isGameOver
+              ? { endDate: new Date().getTime() }
+              : {}),
           });
-          // TODO: Update userData.mode.lastPlayedId and isLastGameSolved
-          return;
+        } else {
+          transaction.set(
+            gameRef,
+            {
+              history,
+              isSolved,
+              ...(isSolved || isGameOver
+                ? { endDate: new Date().getTime() }
+                : {}),
+            },
+            { merge: true }
+          );
         }
 
-        transaction.set(
-          gameRef,
-          {
-            history,
-            isSolved,
-          },
-          { merge: true }
-        );
+        if (isSolved || isGameOver) {
+          if (!userStatSnap.exists()) {
+            transaction.set<Omit<SaltongStatistics, keyof FirestoreData>>(
+              userStatRef,
+              {
+                wins: +isSolved,
+                gamesPlayed: 1,
+                turnWins: [...Array(SALTONG_DATA[mode].wordLen).keys()].map(
+                  (i) => (isSolved && i === history?.length - 1 ? 1 : 0)
+                ),
+                lastPlayedId: isCurrGame ? dateId : '',
+                isLastGameSolved: isCurrGame && isSolved,
+                winStreak: +(isCurrGame && isSolved),
+                uid,
+                type: mode,
+              }
+            );
+          } else {
+            const stat = userStatSnap.data();
+            const turnWins = isSolved
+              ? stat.turnWins.map((numWins, i) =>
+                  i + 1 === history.length ? numWins + 1 : numWins
+                )
+              : stat.turnWins;
 
-        // TODO: If isSolved, update userdata statistics
+            let winStreak = stat.winStreak;
+
+            if (isCurrGame) {
+              const yesterdayDateId = getYesterdayDateId(todayDateId);
+              const isLastGamePlayedYesterday =
+                yesterdayDateId === stat.lastPlayedId;
+
+              if (
+                isSolved &&
+                isLastGamePlayedYesterday &&
+                stat.isLastGameSolved
+              ) {
+                winStreak += 1;
+              } else {
+                winStreak = 0;
+              }
+            }
+
+            transaction.set(
+              userStatRef,
+              {
+                wins: stat.wins + +isSolved,
+                gamesPlayed: stat.gamesPlayed + 1,
+                turnWins,
+                lastPlayedId: isCurrGame ? dateId : stat.lastPlayedId,
+                isLastGameSolved: isCurrGame ? isSolved : stat.isLastGameSolved,
+                winStreak,
+              },
+              {
+                merge: true,
+              }
+            );
+          }
+        }
       });
 
       setIsUpdating(false);

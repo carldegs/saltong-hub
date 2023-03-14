@@ -22,8 +22,9 @@ export interface SaltongGame extends FirestoreData {
   dateId: string;
   history: LetterData[][];
   startDate: number;
-  solveDate?: number;
+  endDate?: number;
   isSolved: boolean;
+  solvedOnTime?: boolean;
 }
 
 export type FirestoreSaltongGame = Omit<

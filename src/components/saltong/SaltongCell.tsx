@@ -5,7 +5,7 @@ import React, { ReactNode, useMemo } from 'react';
 import { useSaltongTheme } from '../../hooks/useSaltongTheme';
 import { LetterStatus } from '../../models/saltong/types';
 
-// TODO: MOVE
+// TODO: MOVE TO THEME.TS
 export const STATUSES: Record<
   LetterStatus | 'initial' | 'active' | 'active-blur',
   {

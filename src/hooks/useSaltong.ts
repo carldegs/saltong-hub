@@ -7,6 +7,8 @@ import { auth } from '../lib/firebase';
 import { LetterData, LetterStatus, SaltongMode } from '../models/saltong/types';
 import useSaltongGame from '../models/saltong/useSaltongGame';
 import useSaltongRound from '../models/saltong/useSaltongRound';
+import useUserStatistics from '../models/user/useUserStatistics';
+import { checkIfGameOver, checkIfSolved } from '../utils/saltong';
 import useDictionary from './useDictionary';
 
 export const checkAnswer = (word: string, solution: string): LetterData[] => {
@@ -74,10 +76,14 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
     mode,
     dateId
   );
+  const [user] = useAuthState(auth);
+  const { userStats, isLoading: isFetchingStats } = useUserStatistics(
+    user?.uid,
+    mode
+  );
   const roundData = useMemo(() => rData?.[0], [rData]);
   const [history, setHistory] = useState<LetterData[][]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [user] = useAuthState(auth);
   const {
     gameData,
     updateGame,
@@ -96,10 +102,17 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
     }
   }, [gameData?.history, gameData?.history?.length, history?.length]);
 
+  useEffect(() => {
+    setHistory([]);
+  }, [dateId]);
+
   const [dictionary, isFetchingDictionary] = useDictionary();
 
   const turn = useMemo(() => history.length, [history.length]);
-  const isLoading = useMemo(() => isFetchingRoundData, [isFetchingRoundData]);
+  const isLoading = useMemo(
+    () => isFetchingRoundData || isFetchingStats,
+    [isFetchingRoundData, isFetchingStats]
+  );
   const isLoadingBackground = useMemo(
     () => isFetchingDictionary || isFirebaseLoading,
     [isFetchingDictionary, isFirebaseLoading]
@@ -136,16 +149,23 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
     const newHistory = [...history, resp];
     setInputValue('');
     setHistory(newHistory);
-    updateGame(newHistory);
+    updateGame(newHistory, userStats?.id);
+
+    return {
+      isSolved: checkIfSolved(newHistory),
+      isGameOver: checkIfGameOver(newHistory, mode),
+    };
   }, [
     dictionary,
     history,
     inputValue,
     isFetchingDictionary,
     maxTurns,
+    mode,
     roundData?.word,
     turn,
     updateGame,
+    userStats?.id,
     wordLen,
   ]);
 
@@ -176,9 +196,14 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
       history,
       letterListStatus,
       isLoadingBackground,
+      gameData,
+      userStats,
+      isSolved: checkIfSolved(history),
+      isGameOver: checkIfGameOver(history, mode),
     }),
     [
       error,
+      gameData,
       handleInputChange,
       history,
       inputValue,
@@ -190,6 +215,7 @@ export const useSaltong = (mode: SaltongMode, dateId?: string) => {
       roundData,
       solveWord,
       turn,
+      userStats,
       wordLen,
     ]
   );

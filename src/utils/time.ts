@@ -1,6 +1,7 @@
 import {
   add,
   closestTo,
+  format,
   formatDuration,
   intervalToDuration,
   isFriday,
@@ -64,7 +65,16 @@ export const getDurationToNextHexGame = () => {
 
 export const formatShortDuration = (duration: Duration) =>
   formatDuration(duration)
+    .replace(' months', 'mos')
+    .replace(' month', 'mo')
     .replace(' days', 'd')
+    .replace(' day', 'd')
     .replace(' hours', 'h')
+    .replace(' hour', 'h')
     .replace(' minutes', 'm')
-    .replace(' seconds', 's');
+    .replace(' minute', 'm')
+    .replace(' seconds', 's')
+    .replace(' second', 's');
+
+export const getYesterdayDateId = (dateId: string) =>
+  format(getPhTime(add(new Date(dateId), { days: -1 })), 'yyyy-MM-dd');

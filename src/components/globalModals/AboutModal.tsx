@@ -11,9 +11,9 @@ import {
   Stack,
   Icon,
   Divider,
-  Image,
   HStack,
   Button,
+  Center,
 } from '@chakra-ui/react';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
@@ -21,6 +21,7 @@ import { ArrowSquareOut } from 'phosphor-react';
 import React from 'react';
 
 import { CONTACT_EMAIL } from '../../constants/links';
+import CarldegsLogo from '../icons/CarldegsLogo';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -114,13 +115,9 @@ const AboutModal: React.FC<Omit<ModalProps, 'children'>> = (props) => {
             A project by Carl de Guia
           </Text>
 
-          <Image
-            src="/carldegs-logo.svg"
-            alt="carldegs logo"
-            h="18px"
-            mx="auto"
-            mt={-4}
-          />
+          <Center w="full" mb={4}>
+            <CarldegsLogo h="24px" />
+          </Center>
         </ModalBody>
 
         <Stack spacing={6} alignItems="center" mb={8}>

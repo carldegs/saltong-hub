@@ -14,6 +14,9 @@ import {
   BoxProps,
   Flex,
   useColorModeValue,
+  Tag,
+  TagLabel,
+  Center,
 } from '@chakra-ui/react';
 import {
   motion,
@@ -176,6 +179,11 @@ const DefaultNavbarTitle = (
     >
       Hub
     </Heading>
+    <Center ml={{ base: 1, md: 2 }} mt={1}>
+      <Tag colorScheme="teal" size="sm">
+        <TagLabel fontSize={{ base: '10px', md: 'xs' }}>ALPHA</TagLabel>
+      </Tag>
+    </Center>
   </Flex>
 );
 

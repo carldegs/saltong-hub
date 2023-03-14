@@ -1,6 +1,8 @@
 import { ThemingProps } from '@chakra-ui/react';
 import { Archive } from 'phosphor-react';
 
+import { SaltongMode } from '../models/saltong/types';
+
 // import { Archive } from 'phosphor-react';
 
 export interface GameModeData {
@@ -12,7 +14,9 @@ export interface GameModeData {
   startDate: string;
 }
 
-export const GAME_MODE_DATA: Record<string, GameModeData> = {
+export type GameMode = SaltongMode | 'hex';
+
+export const GAME_MODE_DATA: Record<GameMode, GameModeData> = {
   main: {
     name: 'Saltong',
     path: '/play',

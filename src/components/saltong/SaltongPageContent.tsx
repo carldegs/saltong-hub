@@ -11,6 +11,7 @@ import {
   useDisclosure,
   Icon,
   useToast,
+  LightMode,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { signInAnonymously } from 'firebase/auth';
@@ -22,7 +23,7 @@ import { X } from 'phosphor-react';
 import React, { ReactElement, useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import { GAME_MODE_DATA } from '../../constants/gameList';
+import { GameMode, GAME_MODE_DATA } from '../../constants/gameList';
 import { useSaltong } from '../../hooks/useSaltong';
 import { useSaltongTheme } from '../../hooks/useSaltongTheme';
 import { auth } from '../../lib/firebase';
@@ -34,6 +35,7 @@ import NavbarLayout from '../layouts/NavbarLayout';
 import SaltongGrid from './SaltongGrid';
 import { SaltongHeader } from './SaltongHeader';
 import SaltongHelpModal from './SaltongHelpModal';
+import SaltongResultsModal from './SaltongResultsModal';
 
 const UnathorizedModal = React.lazy(() => import('../UnauthorizedModal'));
 
@@ -83,6 +85,7 @@ export const SaltongPageContent: React.FC<{
     [data.letterListStatus, getLetterStatusBaseColor]
   );
   const helpModal = useDisclosure();
+  const resultsModal = useDisclosure();
   const [userClosedSignupBanner, setUserClosedSignupBanner] = useState(false);
 
   const showSignupBanner = useMemo(
@@ -103,7 +106,7 @@ export const SaltongPageContent: React.FC<{
           data.gameModeData.fullName || data.gameModeData.name
         } | Saltong Hub`}</title>
         {/* TODO: Update Description */}
-        <meta name="description" content="The place for Filipino word games" />
+        <meta name="description" content="Play Saltong now!" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -152,31 +155,42 @@ export const SaltongPageContent: React.FC<{
               Sync your stats across multiple devices
             </Text>
             <Spacer />
-            <Button
-              colorScheme="blue"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                router.push({
-                  pathname: '/signup',
-                  query: { from: router.asPath },
-                });
-              }}
-            >
-              Sign Up
-            </Button>
-            <IconButton
-              aria-label="close"
-              icon={<Icon as={X} />}
-              colorScheme="blue"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setUserClosedSignupBanner(true);
-              }}
-            />
+            <LightMode>
+              <Button
+                colorScheme="blue"
+                // variant="ghost"
+                size="sm"
+                onClick={() => {
+                  router.push({
+                    pathname: '/signup',
+                    query: { from: router.asPath },
+                  });
+                }}
+              >
+                Sign Up
+              </Button>
+              <IconButton
+                aria-label="close"
+                icon={<Icon as={X} />}
+                colorScheme="blue"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setUserClosedSignupBanner(true);
+                }}
+              />
+            </LightMode>
           </Container>
         </Box>
+      )}
+      {resultsModal.isOpen && (
+        <SaltongResultsModal
+          gameData={data.gameData}
+          roundData={data.roundData}
+          gameMode={mode}
+          statistics={data.userStats}
+          {...resultsModal}
+        />
       )}
       {helpModal.isOpen && <SaltongHelpModal gameMode={mode} {...helpModal} />}
       <Container
@@ -196,11 +210,17 @@ export const SaltongPageContent: React.FC<{
           roundNum={data?.roundData?.roundNum}
           mb={{ base: 2, md: 4 }}
           onHelpClick={helpModal.onOpen}
+          onResultsClick={resultsModal.onOpen}
         />
         {data.isLoading ? (
           <Loader color={data.gameModeData.color} />
         ) : (
-          <SaltongGrid {...data} />
+          <SaltongGrid
+            {...data}
+            onGameDone={() => {
+              resultsModal.onOpen();
+            }}
+          />
         )}
       </Container>
 
@@ -210,7 +230,10 @@ export const SaltongPageContent: React.FC<{
           onClick={(key) => {
             if (key === 'Enter') {
               try {
-                data.solveWord();
+                const { isSolved, isGameOver } = data.solveWord();
+                if (isSolved || isGameOver) {
+                  resultsModal.onOpen();
+                }
               } catch (err) {
                 toast({
                   description: (err as Error)?.message,
@@ -234,7 +257,7 @@ export const SaltongPageContent: React.FC<{
   );
 };
 
-const SaltongNavbarTitle = (mode: SaltongMode): ReactElement => (
+const SaltongNavbarTitle = (mode: GameMode): ReactElement => (
   <Flex>
     <Heading
       as={motion.h1}
@@ -274,7 +297,7 @@ const SaltongNavbarTitle = (mode: SaltongMode): ReactElement => (
   </Flex>
 );
 
-export const getSaltongPageLayout = (mode: SaltongMode) => {
+export const getSaltongPageLayout = (mode: GameMode) => {
   const getLayout = (page: ReactElement) => (
     <NavbarLayout
       // TODO: Fix typing issue

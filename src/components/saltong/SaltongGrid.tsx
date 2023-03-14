@@ -6,7 +6,9 @@ import { useSaltong } from '../../hooks/useSaltong';
 import { LetterData, LetterStatus } from '../../models/saltong/types';
 import SaltongRow from './SaltongRow';
 
-const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
+const SaltongGrid: React.FC<
+  ReturnType<typeof useSaltong> & { onGameDone: () => void }
+> = ({
   wordLen,
   maxTurns,
   turn,
@@ -14,6 +16,9 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
   solveWord,
   handleInputChange,
   history,
+  onGameDone,
+  isSolved,
+  isGameOver,
 }) => {
   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const [isBlurred, setBlurred] = useState(false);
@@ -44,7 +49,9 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
   }, []);
 
   useClickAnyWhere(() => {
-    inputRef.current.focus();
+    if (!isSolved && !isGameOver) {
+      inputRef.current.focus();
+    }
   });
 
   return (
@@ -67,7 +74,10 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
 
           if (e.key === 'Enter' && wordLen === inputValue.length) {
             try {
-              solveWord();
+              const { isSolved, isGameOver } = solveWord();
+              if (isSolved || isGameOver) {
+                onGameDone();
+              }
             } catch (err) {
               toast({
                 description: (err as Error)?.message,
@@ -81,7 +91,7 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
         onCut={(e) => e.preventDefault()}
         onCopy={(e) => e.preventDefault()}
         onPaste={(e) => e.preventDefault()}
-        opacity={0}
+        opacity={'0 !important'}
         height={0}
         width={0}
         onFocus={() => {
@@ -92,12 +102,13 @@ const SaltongGrid: React.FC<ReturnType<typeof useSaltong>> = ({
             setBlurred(document.activeElement === inputRef.current);
           }, 0);
         }}
+        disabled={isSolved || isGameOver}
       />
       {gridLetters.map((val, rowNum) => (
         <SaltongRow
           key={rowNum}
           status={
-            turn === rowNum
+            turn === rowNum && !(isSolved || isGameOver)
               ? isBlurred
                 ? 'active-blur'
                 : 'active'

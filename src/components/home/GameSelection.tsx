@@ -14,6 +14,7 @@ const GAME_SELECTION_LIST = [...GAME_MODE_LIST, ARCHIVES_DATA];
 export const GameSelection = () => {
   const router = useRouter();
   const bg = useColorModeValue('gray.100', 'gray.900');
+
   return (
     <Box bg={bg} pt="72px" mt="-72px">
       <Container maxW="container.xl" centerContent py={6}>
